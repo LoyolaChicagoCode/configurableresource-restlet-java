@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd">
+
+	<bean id="root" class="org.restlet.ext.spring.SpringRouter">
+		<property name="attachments">
+			<map>
+				<entry key="">
+					<bean class="org.restlet.ext.spring.SpringFinder">
+						<lookup-method name="createResource"
+							bean="resource" />
+					</bean>
+				</entry>
+			</map>
+		</property>
+	</bean>
+
+	<bean id="resource" class="helloworldrestlet.HelloWorldResource"
+		scope="prototype">
+		<property name="available" value="true" />
+		<property name="representationTemplates">
+			<map>
+				<entry key-ref="org.restlet.data.MediaType.TEXT_PLAIN"
+					value-ref="hwFreemarkerTextPlain" />
+				<entry key-ref="org.restlet.data.MediaType.TEXT_HTML"
+					value-ref="hwFreemarkerTextHtml" />
+				<entry key-ref="org.restlet.data.MediaType.APPLICATION_JSON"
+					value-ref="jsonRepresentationFactory" />
+			</map>
+		</property>
+	</bean>
+
+	<bean id="hwStringTextPlain"
+		class="edu.luc.etl.restlet.spring.StringRepresentationFactory">
+		<property name="templateString"
+			value="Hello, world! It is now ${DATE}." />
+	</bean>
+
+	<bean id="hwStringTextHtml"
+		class="edu.luc.etl.restlet.spring.StringRepresentationFactory">
+		<property name="templateString">
+			<value>
+				<![CDATA[<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+						<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+							<head>
+								<title>Hello World!</title>
+							</head>
+							<body>
+								<h1>Hello World!</h1>
+								<p>It is now ${DATE}.</p>
+							</body>
+						</html>
+				]]>
+			</value>
+		</property>
+	</bean>
+
+	<bean id="hwFreemarkerTextPlain"
+		class="edu.luc.etl.restlet.spring.FreemarkerRepresentationFactory">
+		<property name="templateName" value="hw-plain.ftl" />
+		<property name="freemarkerConfig" ref="freemarkerConfig" />
+	</bean>
+
+	<bean id="hwFreemarkerTextHtml"
+		class="edu.luc.etl.restlet.spring.FreemarkerRepresentationFactory">
+		<property name="templateName" value="hw-html.ftl" />
+		<property name="freemarkerConfig" ref="freemarkerConfig" />
+	</bean>
+
+	<bean id="jsonRepresentationFactory"
+		class="edu.luc.etl.restlet.spring.JsonRepresentationFactory" />
+
+	<bean id="org.restlet.data.MediaType.TEXT_PLAIN"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+
+	<bean id="org.restlet.data.MediaType.TEXT_HTML"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+
+	<bean id="org.restlet.data.MediaType.APPLICATION_JSON"
+		class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean" />
+
+	<bean id="freemarkerConfig"
+		class="freemarker.template.Configuration">
+		<property name="directoryForTemplateLoading"
+			value="src/test/resources/presentation" />
+		<property name="objectWrapper">
+			<bean class="freemarker.template.DefaultObjectWrapper" />
+		</property>
+	</bean>
+
+</beans>
